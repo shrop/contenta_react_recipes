@@ -1,18 +1,34 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { buildApi, get } from 'redux-bees';
+import Recipe from './components/Recipe';
 
 class App extends Component {
+  constructor () {
+    super()
+    this.state = {
+      recipes: []
+    };
+    const apiEndpoints = {
+      getRecipes: { method: get, path: '/recipes' }
+    };
+    const config = {
+      baseUrl: 'https://dev-contentacms.pantheonsite.io/api'
+    };
+    const api = buildApi(apiEndpoints, config);
+    api.getRecipes()
+    .then(data => this.setState({ recipes: data.body.data }));
+  }
+
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+          <ul className="list-of-recipes">
+            {
+              Object
+                .keys(this.state.recipes)
+                .map(key => <Recipe key={key} index={key} data={this.state.recipes[key]} />)
+            }
+          </ul>
       </div>
     );
   }
